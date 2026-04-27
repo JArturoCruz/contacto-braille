@@ -95,6 +95,21 @@ export default function Dashboard() {
           ))}
         </div>
 
+        {/* Botón tutorial */}
+        <button
+          style={si.btnTutorial}
+          onClick={() => navigate('/tutorial')}
+          tabIndex={0}
+          onFocus={() => hablar('Botón tutorial de teclado. Aprende a ubicar tus dedos para escribir braille. Es opcional. Presiona Enter para abrir.')}
+          onMouseEnter={() => hablar('Tutorial de teclado')}>
+          <span style={{ fontSize:20 }}>⌨️</span>
+          <div style={{ flex:1, textAlign:'left' }}>
+            <div style={{ color:'white', fontWeight:800, fontSize:14 }}>Tutorial de Teclado</div>
+            <div style={{ color:'#a78bfa', fontSize:12 }}>Aprende a posicionar tus dedos · Opcional</div>
+          </div>
+          <span style={{ color:'#7c6fad', fontSize:14 }}>→</span>
+        </button>
+
         {UNIDADES.map((u, ui) => {
           const bloqueada = u.requiereNivel && !progreso.nivelesCompletados?.includes(u.requiereNivel)
           return (
@@ -198,6 +213,21 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Banner tutorial */}
+      <div style={sv.tutorialBanner} onClick={() => navigate('/tutorial')}>
+        <div style={{ fontSize:36 }}>⌨️</div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontWeight:700, fontSize:15, color:'#1f2937' }}>Tutorial de Teclado</div>
+          <div style={{ color:'#6b7280', fontSize:13, marginTop:2 }}>
+            ¿Primera vez? Aprende a ubicar tus dedos para escribir braille — tarda menos de 3 minutos
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={sv.badgeOpcional}>Opcional</span>
+          <span style={{ color:'#7c3aed', fontWeight:700, fontSize:18 }}>→</span>
+        </div>
+      </div>
+
       <h2 style={sv.sectionTitle}>Unidades de Aprendizaje</h2>
       <p style={{ color:'#888', marginBottom:20 }}>Completa niveles en orden para desbloquear nuevas unidades</p>
 
@@ -274,6 +304,7 @@ const si = {
   statLbl: { display:'block', fontSize:10, opacity:0.85 },
   unitHeader: { background:'#3b3670', borderRadius:8, padding:'8px 12px', cursor:'default' },
   nivelBtn: { width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center', border:'none', borderRadius:8, padding:'10px 14px', marginTop:4, cursor:'pointer', textAlign:'left' },
+  btnTutorial: { display:'flex', alignItems:'center', gap:12, background:'#2e2a5e', border:'1.5px dashed #7c3aed', borderRadius:10, padding:'12px 14px', cursor:'pointer', width:'100%', transition:'background 0.15s' },
 }
 
 const sv = {
@@ -292,5 +323,7 @@ const sv = {
   unitIcon: { width:56, height:56, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, flexShrink:0 },
   progressBar: { height:6, background:'#e5e7eb', borderRadius:99, overflow:'hidden' },
   progressFill: { height:'100%', background:'linear-gradient(90deg,#7c3aed,#2563eb)', borderRadius:99, transition:'width 0.5s' },
-  startBtn: { background:'#111', color:'white', border:'none', borderRadius:8, padding:'10px 20px', fontWeight:700, cursor:'pointer', whiteSpace:'nowrap' }
+  startBtn: { background:'#111', color:'white', border:'none', borderRadius:8, padding:'10px 20px', fontWeight:700, cursor:'pointer', whiteSpace:'nowrap' },
+  tutorialBanner: { display:'flex', alignItems:'center', gap:16, background:'white', border:'2px dashed #c4b5fd', borderRadius:12, padding:'16px 20px', marginBottom:24, cursor:'pointer', transition:'border-color 0.2s, box-shadow 0.2s', boxShadow:'0 2px 8px #0001' },
+  badgeOpcional: { background:'#f5f3ff', color:'#7c3aed', border:'1px solid #ddd6fe', borderRadius:20, padding:'3px 10px', fontSize:12, fontWeight:700, whiteSpace:'nowrap' },
 }

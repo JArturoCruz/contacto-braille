@@ -3,3 +3,4 @@ Alejandra Lopez|alejandra123|123456|invidente
 Alejandra Lopez|Alejandra123|123456|invidente
 alejandra|ale|123456|invidente
 a|a|a|invidente
+b|b|b|vidente
