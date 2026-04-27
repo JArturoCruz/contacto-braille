@@ -2,3 +2,4 @@ Jorge Arturo|arturo123|123456|vidente
 Alejandra Lopez|alejandra123|123456|invidente
 Alejandra Lopez|Alejandra123|123456|invidente
 alejandra|ale|123456|invidente
+a|a|a|invidente
