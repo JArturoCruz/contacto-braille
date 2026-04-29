@@ -4,44 +4,15 @@ import { hablar, setVozActiva } from '../utils/voz'
 import { esInvidente } from '../utils/modo'
 
 const ABECEDARIO_BRAILLE = {
-  A: [1,0,0, 0,0,0],
-  B: [1,1,0, 0,0,0],
-  C: [1,0,0, 1,0,0],
-  D: [1,0,0, 1,1,0],
-  E: [1,0,0, 0,1,0],
-  F: [1,1,0, 1,0,0],
-  G: [1,1,0, 1,1,0],
-  H: [1,1,0, 0,1,0],
-  I: [0,1,0, 1,0,0],
-  J: [0,1,0, 1,1,0],
-  K: [1,0,1, 0,0,0],
-  L: [1,1,1, 0,0,0],
-  M: [1,0,1, 1,0,0],
-  N: [1,0,1, 1,1,0],
-  O: [1,0,1, 0,1,0],
-  P: [1,1,1, 1,0,0],
-  Q: [1,1,1, 1,1,0],
-  R: [1,1,1, 0,1,0],
-  S: [0,1,1, 1,0,0],
-  T: [0,1,1, 1,1,0],
-  U: [1,0,1, 0,0,1],
-  V: [1,1,1, 0,0,1],
-  W: [0,1,0, 1,1,1],
-  X: [1,0,1, 1,0,1],
-  Y: [1,0,1, 1,1,1],
-  Z: [1,0,1, 0,1,1],
+  A: [1,0,0, 0,0,0], B: [1,1,0, 0,0,0], C: [1,0,0, 1,0,0], D: [1,0,0, 1,1,0], E: [1,0,0, 0,1,0],
+  F: [1,1,0, 1,0,0], G: [1,1,0, 1,1,0], H: [1,1,0, 0,1,0], I: [0,1,0, 1,0,0], J: [0,1,0, 1,1,0],
+  K: [1,0,1, 0,0,0], L: [1,1,1, 0,0,0], M: [1,0,1, 1,0,0], N: [1,0,1, 1,1,0], O: [1,0,1, 0,1,0],
+  P: [1,1,1, 1,0,0], Q: [1,1,1, 1,1,0], R: [1,1,1, 0,1,0], S: [0,1,1, 1,0,0], T: [0,1,1, 1,1,0],
+  U: [1,0,1, 0,0,1], V: [1,1,1, 0,0,1], W: [0,1,0, 1,1,1], X: [1,0,1, 1,0,1], Y: [1,0,1, 1,1,1], Z: [1,0,1, 0,1,1],
 }
 
-const LETRAS = Object.keys(ABECEDARIO_BRAILLE)
-
-const TECLA_A_PUNTO = {
-  'd': 0,
-  'f': 1,
-  'g': 2,
-  'h': 3,
-  'j': 4,
-  'k': 5,
-}
+const LETRAS = ['A', 'B', 'C', 'D', 'E']
+const TECLA_A_PUNTO = { 'd': 0, 'f': 1, 'g': 2, 'h': 3, 'j': 4, 'k': 5 }
 
 const LAYOUT = [
   { indice: 0, col: 0, fila: 0, numero: 1, tecla: 'D' },
@@ -62,6 +33,9 @@ export default function Leccion1() {
   const [aciertos, setAciertos] = useState(0)
   const [mostrarPista, setMostrarPista] = useState(false)
   const [teclaPulsada, setTeclaPulsada] = useState(null)
+  
+  // Para la animación final de estrellas
+  const [estrellasAnimadas, setEstrellasAnimadas] = useState(0)
 
   const letra = LETRAS[letraActual]
   const correcta = ABECEDARIO_BRAILLE[letra]
@@ -74,7 +48,22 @@ export default function Leccion1() {
     if (estado === 'jugando') {
       setTimeout(() => hablar(`Escribe la letra ${letra} en braille`), 300)
     }
-  }, [letraActual])
+  }, [letraActual, estado])
+
+  useEffect(() => {
+    if (estado === 'completado') {
+      const precisionCalculada = intentos > 0 ? Math.round((aciertos / intentos) * 100) : 100
+      const estrellasTotales = precisionCalculada === 100 ? 3 : precisionCalculada >= 70 ? 2 : 1
+      
+      let contador = 0
+      const intervalo = setInterval(() => {
+        contador++
+        setEstrellasAnimadas(contador)
+        if (contador >= estrellasTotales) clearInterval(intervalo)
+      }, 300)
+      return () => clearInterval(intervalo)
+    }
+  }, [estado, aciertos, intentos])
 
   const validar = useCallback(() => {
     if (estado !== 'jugando') return
@@ -88,7 +77,7 @@ export default function Leccion1() {
       setTimeout(() => {
         if (letraActual + 1 >= LETRAS.length) {
           setEstado('completado')
-          hablar('¡Felicidades! Completaste todas las letras del abecedario en braille')
+          hablar('¡Felicidades! Completaste la lección.')
         } else {
           setLetraActual(prev => prev + 1)
           setMatriz([0,0,0,0,0,0])
@@ -123,9 +112,7 @@ export default function Leccion1() {
         setMatriz(prev => {
           const nueva = [...prev]
           nueva[indice] = nueva[indice] === 1 ? 0 : 1
-          hablar(nueva[indice] === 1
-            ? `Punto ${LAYOUT[indice].numero} activado`
-            : `Punto ${LAYOUT[indice].numero} desactivado`)
+          hablar(nueva[indice] === 1 ? `Punto ${LAYOUT[indice].numero} activado` : `Punto ${LAYOUT[indice].numero} desactivado`)
           return nueva
         })
         setTimeout(() => setTeclaPulsada(null), 150)
@@ -142,9 +129,7 @@ export default function Leccion1() {
     const nueva = [...matriz]
     nueva[indice] = nueva[indice] === 1 ? 0 : 1
     setMatriz(nueva)
-    hablar(nueva[indice] === 1
-      ? `Punto ${LAYOUT[indice].numero} activado`
-      : `Punto ${LAYOUT[indice].numero} desactivado`)
+    hablar(nueva[indice] === 1 ? `Punto ${LAYOUT[indice].numero} activado` : `Punto ${LAYOUT[indice].numero} desactivado`)
   }
 
   const colorPunto = (indice) => {
@@ -156,17 +141,31 @@ export default function Leccion1() {
 
   const progreso = Math.round((letraActual / LETRAS.length) * 100)
 
-  // ─── PANTALLA COMPLETADO ───────────────────────────────────────────
   if (estado === 'completado') {
+    const precisionCalculada = intentos > 0 ? Math.round((aciertos / intentos) * 100) : 100
+
     return (
       <div style={invidente ? si.page : sv.page}>
         <div style={invidente ? si.completadoCard : sv.completadoCard}>
-          <div style={{fontSize: invidente ? 60 : 80, marginBottom:16}}>🏆</div>
+          <div style={{fontSize: invidente ? 60 : 80, marginBottom:8}}>🏆</div>
           <h1 style={invidente ? si.completadoTitulo : sv.completadoTitulo}>
             ¡Lección Completada!
           </h1>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, margin: '16px 0 24px' }}>
+            {[1, 2, 3].map(s => (
+              <div key={s} style={{
+                fontSize: 56,
+                filter: s <= estrellasAnimadas ? 'none' : 'grayscale(1) opacity(0.2)',
+                transform: s <= estrellasAnimadas ? 'scale(1.2) rotate(5deg)' : 'scale(1)',
+                textShadow: s <= estrellasAnimadas ? '0 0 20px #f59e0b' : 'none',
+                transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)'
+              }}>⭐</div>
+            ))}
+          </div>
+
           <p style={invidente ? si.completadoSub : sv.completadoSub}>
-            Completaste todas las letras del abecedario braille
+            Completaste los primeros fundamentos del abecedario braille
           </p>
           <div style={invidente ? si.resultados : sv.resultados}>
             <div style={invidente ? si.resultItem : sv.resultItem}>
@@ -178,9 +177,7 @@ export default function Leccion1() {
               <span style={{fontSize:13, color: invidente ? '#c4b5fd':'#888'}}>Intentos</span>
             </div>
             <div style={invidente ? si.resultItem : sv.resultItem}>
-              <span style={{fontSize: invidente ? 28:32, fontWeight:800, color:'#22c55e'}}>
-                {intentos > 0 ? Math.round((LETRAS.length / intentos) * 100) : 100}%
-              </span>
+              <span style={{fontSize: invidente ? 28:32, fontWeight:800, color:'#22c55e'}}>{precisionCalculada}%</span>
               <span style={{fontSize:13, color: invidente ? '#c4b5fd':'#888'}}>Precisión</span>
             </div>
           </div>
@@ -196,65 +193,34 @@ export default function Leccion1() {
     )
   }
 
-  // ─── MODO INVIDENTE ────────────────────────────────────────────────
   if (invidente) {
     return (
       <div style={si.page}>
-
         <div style={si.header}>
-          <button style={si.btnVolver} onClick={() => navigate('/dashboard')}
-            onFocus={() => hablar('Volver al panel principal')}>
-            ← Volver
-          </button>
+          <button style={si.btnVolver} onClick={() => navigate('/dashboard')} onFocus={() => hablar('Volver al panel principal')}>← Volver</button>
           <span style={si.headerTitulo}>Abecedario Braille</span>
-          <span style={si.headerContador}
-            onFocus={() => hablar(`Letra ${letraActual + 1} de ${LETRAS.length}`)}>
-            {letraActual + 1}/{LETRAS.length}
-          </span>
+          <span style={si.headerContador} onFocus={() => hablar(`Letra ${letraActual + 1} de ${LETRAS.length}`)}>{letraActual + 1}/{LETRAS.length}</span>
         </div>
-
-        {/* Barra de progreso */}
-        <div style={si.progressBar}>
-          <div style={{...si.progressFill, width: progreso + '%'}} />
-        </div>
-
-        {/* Letra actual */}
-        <div style={si.letraCard} tabIndex={0}
-          onFocus={() => hablar(`Escribe la letra ${letra} en braille`)}
-          onMouseEnter={() => hablar(`Escribe la letra ${letra} en braille`)}>
+        <div style={si.progressBar}><div style={{...si.progressFill, width: progreso + '%'}} /></div>
+        <div style={si.letraCard} tabIndex={0} onFocus={() => hablar(`Escribe la letra ${letra} en braille`)}>
           <span style={si.letraGrande}>{letra}</span>
           <span style={si.letraDesc}>Letra {letraActual + 1} de {LETRAS.length}</span>
         </div>
-
-        {/* Matriz + referencia */}
         <div style={si.matrizArea}>
           <div style={si.matrizWrapper}>
             <div style={{display:'flex', gap:8, marginBottom:4, marginLeft:20}}>
-              <span style={si.axisLabel}>C1</span>
-              <span style={si.axisLabel}>C2</span>
+              <span style={si.axisLabel}>C1</span><span style={si.axisLabel}>C2</span>
             </div>
             <div style={{display:'flex', gap:6}}>
               <div style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-                {['F1','F2','F3'].map(f => (
-                  <span key={f} style={{...si.axisLabel, height:52, display:'flex', alignItems:'center'}}>{f}</span>
-                ))}
+                {['F1','F2','F3'].map(f => <span key={f} style={{...si.axisLabel, height:52, display:'flex', alignItems:'center'}}>{f}</span>)}
               </div>
               <div style={si.grid}>
                 {LAYOUT.map(({ indice, col, fila, numero, tecla }) => (
-                  <button
-                    key={indice}
-                    tabIndex={0}
-                    style={{
-                      ...si.punto,
-                      gridColumn: col + 1,
-                      gridRow: fila + 1,
-                      background: colorPunto(indice),
-                      transform: matriz[indice] ? 'scale(1.08)' : 'scale(1)',
-                      outline: teclaPulsada === tecla.toLowerCase() ? '3px solid white' : 'none',
-                    }}
-                    onClick={() => togglePunto(indice)}
-                    onFocus={() => hablar(`Punto ${numero}, tecla ${tecla}, ${matriz[indice] ? 'activado' : 'desactivado'}`)}
-                    onMouseEnter={() => hablar(`Punto ${numero}, tecla ${tecla}, ${matriz[indice] ? 'activado' : 'desactivado'}`)}>
+                  <button key={indice} tabIndex={0} style={{
+                      ...si.punto, gridColumn: col + 1, gridRow: fila + 1, background: colorPunto(indice),
+                      transform: matriz[indice] ? 'scale(1.08)' : 'scale(1)', outline: teclaPulsada === tecla.toLowerCase() ? '3px solid white' : 'none',
+                    }} onClick={() => togglePunto(indice)} onFocus={() => hablar(`Punto ${numero}, tecla ${tecla}, ${matriz[indice] ? 'activado' : 'desactivado'}`)}>
                     <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:1}}>
                       <span style={{fontSize:14, color: matriz[indice] ? 'white':'#aaa', fontWeight:800, lineHeight:1}}>{numero}</span>
                       <span style={{fontSize:9, color: matriz[indice] ? 'rgba(255,255,255,0.8)':'#888', fontWeight:600, lineHeight:1}}>{tecla}</span>
@@ -264,140 +230,67 @@ export default function Leccion1() {
               </div>
             </div>
           </div>
-
-          {/* Referencia teclas */}
           <div style={si.referencia}>
             <div style={{color:'#c4b5fd', fontSize:12, fontWeight:700, marginBottom:8, textAlign:'center'}}>Teclas</div>
             <div style={si.referenciaGrid}>
               {LAYOUT.map(({ numero, tecla, indice }) => (
                 <div key={indice} style={{
-                  ...si.referenciaItem,
-                  background: teclaPulsada === tecla.toLowerCase() ? '#7c3aed' : '#2e2a5e',
-                  color: teclaPulsada === tecla.toLowerCase() ? 'white' : '#c4b5fd',
+                  ...si.referenciaItem, background: teclaPulsada === tecla.toLowerCase() ? '#7c3aed' : '#2e2a5e', color: teclaPulsada === tecla.toLowerCase() ? 'white' : '#c4b5fd',
                 }}>
-                  <span style={{fontSize:14, fontWeight:800}}>{tecla}</span>
-                  <span style={{fontSize:9, opacity:0.7}}>P{numero}</span>
+                  <span style={{fontSize:14, fontWeight:800}}>{tecla}</span><span style={{fontSize:9, opacity:0.7}}>P{numero}</span>
                 </div>
               ))}
             </div>
-            <div style={{fontSize:10, color:'#7c6fad', marginTop:8, textAlign:'center', lineHeight:1.6}}>
-              Enter=validar<br/>Esc=limpiar
-            </div>
+            <div style={{fontSize:10, color:'#7c6fad', marginTop:8, textAlign:'center', lineHeight:1.6}}>Enter=validar<br/>Esc=limpiar</div>
           </div>
         </div>
-
-        {/* Feedback */}
-        {estado === 'correcto' && (
-          <div style={si.feedbackOk} role="alert">✅ ¡Correcto!</div>
-        )}
-        {estado === 'incorrecto' && (
-          <div style={si.feedbackMal} role="alert">❌ Incorrecto, intenta de nuevo</div>
-        )}
-
-        {/* Botones */}
+        {estado === 'correcto' && <div style={si.feedbackOk} role="alert">✅ ¡Correcto!</div>}
+        {estado === 'incorrecto' && <div style={si.feedbackMal} role="alert">❌ Incorrecto, intenta de nuevo</div>}
         <div style={si.botones}>
-          <button style={si.btnSec} onClick={limpiar}
-            onFocus={() => hablar('Botón limpiar, también puedes presionar Escape')}>
-            🗑 Limpiar
-          </button>
-          <button style={{...si.btnSec, background: mostrarPista ? '#7c3aed' : '#2e2a5e'}}
-            onClick={() => {
-              setMostrarPista(!mostrarPista)
-              hablar(mostrarPista ? 'Pista ocultada' : 'Pista activada, puntos morados son la respuesta')
-            }}
-            onFocus={() => hablar('Botón pista')}>
-            💡 Pista
-          </button>
-          <button style={si.btnPrimario} onClick={validar}
-            onFocus={() => hablar('Botón validar, también puedes presionar Enter')}>
-            ✓ Validar
-          </button>
+          <button style={si.btnSec} onClick={limpiar} onFocus={() => hablar('Botón limpiar')}>🗑 Limpiar</button>
+          <button style={{...si.btnSec, background: mostrarPista ? '#7c3aed' : '#2e2a5e'}} onClick={() => setMostrarPista(!mostrarPista)} onFocus={() => hablar('Botón pista')}>💡 Pista</button>
+          <button style={si.btnPrimario} onClick={validar} onFocus={() => hablar('Botón validar')}>✓ Validar</button>
         </div>
-
-        {/* Stats */}
         <div style={si.statsRow}>
-          <div style={si.statItem} tabIndex={0}
-            onFocus={() => hablar(`Aciertos: ${aciertos}`)}>
-            <span style={{fontSize:18, fontWeight:800, color:'#22c55e'}}>{aciertos}</span>
-            <span style={{fontSize:11, color:'#c4b5fd'}}>Aciertos</span>
-          </div>
-          <div style={si.statItem} tabIndex={0}
-            onFocus={() => hablar(`Intentos: ${intentos}`)}>
-            <span style={{fontSize:18, fontWeight:800, color:'#ea580c'}}>{intentos}</span>
-            <span style={{fontSize:11, color:'#c4b5fd'}}>Intentos</span>
-          </div>
-          <div style={si.statItem} tabIndex={0}
-            onFocus={() => hablar(`Letras restantes: ${LETRAS.length - letraActual}`)}>
-            <span style={{fontSize:18, fontWeight:800, color:'#a78bfa'}}>{LETRAS.length - letraActual}</span>
-            <span style={{fontSize:11, color:'#c4b5fd'}}>Restantes</span>
-          </div>
+          <div style={si.statItem} tabIndex={0}><span style={{fontSize:18, fontWeight:800, color:'#22c55e'}}>{aciertos}</span><span style={{fontSize:11, color:'#c4b5fd'}}>Aciertos</span></div>
+          <div style={si.statItem} tabIndex={0}><span style={{fontSize:18, fontWeight:800, color:'#ea580c'}}>{intentos}</span><span style={{fontSize:11, color:'#c4b5fd'}}>Intentos</span></div>
+          <div style={si.statItem} tabIndex={0}><span style={{fontSize:18, fontWeight:800, color:'#a78bfa'}}>{LETRAS.length - letraActual}</span><span style={{fontSize:11, color:'#c4b5fd'}}>Restantes</span></div>
         </div>
-
       </div>
     )
   }
 
-  // ─── MODO VIDENTE ──────────────────────────────────────────────────
   return (
     <div style={sv.page}>
-
       <div style={sv.header}>
-        <button style={sv.btnVolver} onClick={() => navigate('/dashboard')}>
-          ← Volver
-        </button>
+        <button style={sv.btnVolver} onClick={() => navigate('/dashboard')}>← Volver</button>
         <div style={{textAlign:'center'}}>
           <div style={{fontWeight:700, fontSize:16}}>Fundamentos del Braille</div>
           <div style={{color:'#888', fontSize:13}}>Lección 1 — El Abecedario</div>
         </div>
-        <div style={{fontSize:13, color:'#888', fontWeight:600}}>
-          {letraActual + 1} / {LETRAS.length}
-        </div>
+        <div style={{fontSize:13, color:'#888', fontWeight:600}}>{letraActual + 1} / {LETRAS.length}</div>
       </div>
-
-      <div style={sv.progressBar}>
-        <div style={{...sv.progressFill, width: progreso + '%'}} />
-      </div>
-
+      <div style={sv.progressBar}><div style={{...sv.progressFill, width: progreso + '%'}} /></div>
       <div style={sv.mainCard}>
         <div style={sv.letraDisplay}>
           <div style={sv.letraGrande}>{letra}</div>
-          <div style={{color:'#888', fontSize:14, marginTop:8}}>
-            Letra {letraActual + 1} de {LETRAS.length}
-          </div>
+          <div style={{color:'#888', fontSize:14, marginTop:8}}>Letra {letraActual + 1} de {LETRAS.length}</div>
         </div>
-
-        <p style={sv.instruccion}>
-          Llena la matriz braille para la letra <strong>{letra}</strong>
-        </p>
-
+        <p style={sv.instruccion}>Llena la matriz braille para la letra <strong>{letra}</strong></p>
         <div style={sv.matrizContainer}>
           <div style={sv.matrizWrapper}>
-            <div style={{display:'flex', gap:10, marginBottom:6, marginLeft:24}}>
-              <div style={sv.colLabel}>Col 1</div>
-              <div style={sv.colLabel}>Col 2</div>
-            </div>
+            <div style={{display:'flex', gap:10, marginBottom:6, marginLeft:24}}><div style={sv.colLabel}>Col 1</div><div style={sv.colLabel}>Col 2</div></div>
             <div style={{display:'flex', alignItems:'stretch', gap:6}}>
               <div style={{display:'flex', flexDirection:'column', justifyContent:'space-around'}}>
-                {['F1','F2','F3'].map(f => (
-                  <span key={f} style={{fontSize:11, color:'#aaa', fontWeight:600, height:56, display:'flex', alignItems:'center'}}>{f}</span>
-                ))}
+                {['F1','F2','F3'].map(f => <span key={f} style={{fontSize:11, color:'#aaa', fontWeight:600, height:56, display:'flex', alignItems:'center'}}>{f}</span>)}
               </div>
               <div style={sv.grid}>
                 {LAYOUT.map(({ indice, col, fila, numero, tecla }) => (
-                  <button
-                    key={indice}
-                    tabIndex={0}
-                    style={{
-                      ...sv.punto,
-                      gridColumn: col + 1,
-                      gridRow: fila + 1,
-                      background: colorPunto(indice),
+                  <button key={indice} tabIndex={0} style={{
+                      ...sv.punto, gridColumn: col + 1, gridRow: fila + 1, background: colorPunto(indice),
                       transform: (matriz[indice] || teclaPulsada === tecla.toLowerCase()) ? 'scale(1.1)' : 'scale(1)',
-                      boxShadow: matriz[indice] ? '0 4px 12px #2563eb44' : '0 2px 4px #0001',
-                      outline: teclaPulsada === tecla.toLowerCase() ? '3px solid #2563eb' : 'none',
-                    }}
-                    onClick={() => togglePunto(indice)}
-                    onFocus={() => hablar(`Punto ${numero}, tecla ${tecla}`)}>
+                      boxShadow: matriz[indice] ? '0 4px 12px #2563eb44' : '0 2px 4px #0001', outline: teclaPulsada === tecla.toLowerCase() ? '3px solid #2563eb' : 'none',
+                    }} onClick={() => togglePunto(indice)}>
                     <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:1}}>
                       <span style={{fontSize:13, color: matriz[indice] ? 'white':'#999', fontWeight:800, lineHeight:1}}>{numero}</span>
                       <span style={{fontSize:9, color: matriz[indice] ? 'rgba(255,255,255,0.8)':'#bbb', fontWeight:600, lineHeight:1}}>{tecla}</span>
@@ -407,70 +300,37 @@ export default function Leccion1() {
               </div>
             </div>
           </div>
-
           <div style={sv.referencia}>
             <div style={{fontSize:12, color:'#888', marginBottom:10, textAlign:'center', fontWeight:600}}>Teclas</div>
             <div style={sv.referenciaGrid}>
               {LAYOUT.map(({ numero, tecla, indice }) => (
                 <div key={indice} style={{
-                  ...sv.referenciaItem,
-                  background: teclaPulsada === tecla.toLowerCase() ? '#7c3aed' : '#ede9fe',
-                  color: teclaPulsada === tecla.toLowerCase() ? 'white' : '#7c3aed',
-                  transition:'all 0.1s'
+                  ...sv.referenciaItem, background: teclaPulsada === tecla.toLowerCase() ? '#7c3aed' : '#ede9fe', color: teclaPulsada === tecla.toLowerCase() ? 'white' : '#7c3aed', transition:'all 0.1s'
                 }}>
-                  <span style={{fontSize:14, fontWeight:800}}>{tecla}</span>
-                  <span style={{fontSize:9, opacity:0.7}}>P{numero}</span>
+                  <span style={{fontSize:14, fontWeight:800}}>{tecla}</span><span style={{fontSize:9, opacity:0.7}}>P{numero}</span>
                 </div>
               ))}
             </div>
-            <div style={{fontSize:10, color:'#aaa', marginTop:8, textAlign:'center'}}>
-              Enter = validar<br/>Esc = limpiar
-            </div>
+            <div style={{fontSize:10, color:'#aaa', marginTop:8, textAlign:'center'}}>Enter = validar<br/>Esc = limpiar</div>
           </div>
         </div>
-
-        {estado === 'correcto' && (
-          <div style={sv.feedbackCorrecto}>✅ ¡Correcto!</div>
-        )}
-        {estado === 'incorrecto' && (
-          <div style={sv.feedbackIncorrecto}>❌ Incorrecto, intenta de nuevo</div>
-        )}
-
+        {estado === 'correcto' && <div style={sv.feedbackCorrecto}>✅ ¡Correcto!</div>}
+        {estado === 'incorrecto' && <div style={sv.feedbackIncorrecto}>❌ Incorrecto, intenta de nuevo</div>}
         <div style={sv.botones}>
           <button style={sv.btnSecundario} onClick={limpiar}>🗑 Limpiar</button>
-          <button style={{...sv.btnSecundario, background: mostrarPista ? '#ede9fe' : '#f5f5f5'}}
-            onClick={() => setMostrarPista(!mostrarPista)}>
-            💡 Pista
-          </button>
+          <button style={{...sv.btnSecundario, background: mostrarPista ? '#ede9fe' : '#f5f5f5'}} onClick={() => setMostrarPista(!mostrarPista)}>💡 Pista</button>
           <button style={sv.btnPrimario} onClick={validar}>✓ Validar</button>
         </div>
-
-        <p style={{textAlign:'center', fontSize:12, color:'#aaa', marginTop:8}}>
-          Usa <strong>D F G H J K</strong> para llenar la matriz ·
-          <strong> Enter</strong> para validar · <strong>Esc</strong> para limpiar
-        </p>
       </div>
-
       <div style={sv.statsBar}>
-        <div style={sv.statItem}>
-          <span style={{fontSize:20, fontWeight:800, color:'#22c55e'}}>{aciertos}</span>
-          <span style={{fontSize:12, color:'#888'}}>Aciertos</span>
-        </div>
-        <div style={sv.statItem}>
-          <span style={{fontSize:20, fontWeight:800, color:'#ea580c'}}>{intentos}</span>
-          <span style={{fontSize:12, color:'#888'}}>Intentos</span>
-        </div>
-        <div style={sv.statItem}>
-          <span style={{fontSize:20, fontWeight:800, color:'#7c3aed'}}>{LETRAS.length - letraActual}</span>
-          <span style={{fontSize:12, color:'#888'}}>Restantes</span>
-        </div>
+        <div style={sv.statItem}><span style={{fontSize:20, fontWeight:800, color:'#22c55e'}}>{aciertos}</span><span style={{fontSize:12, color:'#888'}}>Aciertos</span></div>
+        <div style={sv.statItem}><span style={{fontSize:20, fontWeight:800, color:'#ea580c'}}>{intentos}</span><span style={{fontSize:12, color:'#888'}}>Intentos</span></div>
+        <div style={sv.statItem}><span style={{fontSize:20, fontWeight:800, color:'#7c3aed'}}>{LETRAS.length - letraActual}</span><span style={{fontSize:12, color:'#888'}}>Restantes</span></div>
       </div>
-
     </div>
   )
 }
 
-// ─── ESTILOS MODO INVIDENTE ────────────────────────────────────────────
 const si = {
   page: { maxWidth:420, margin:'0 auto', padding:12, background:'#1e1b4b', minHeight:'100vh', display:'flex', flexDirection:'column', gap:8 },
   header: { display:'flex', justifyContent:'space-between', alignItems:'center', background:'#2e2a5e', borderRadius:10, padding:'10px 14px' },
@@ -504,7 +364,6 @@ const si = {
   resultItem: { display:'flex', flexDirection:'column', alignItems:'center', gap:2 },
 }
 
-// ─── ESTILOS MODO VIDENTE ──────────────────────────────────────────────
 const sv = {
   page: { maxWidth:600, margin:'0 auto', padding:24, background:'#f0f4ff', minHeight:'100vh' },
   header: { display:'flex', justifyContent:'space-between', alignItems:'center', background:'white', borderRadius:12, padding:'14px 20px', marginBottom:12, boxShadow:'0 2px 8px #0001' },

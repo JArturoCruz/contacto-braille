@@ -154,7 +154,7 @@ export default function Dashboard() {
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div style={sv.logoSmall}>⠿</div>
           <div>
-            <div style={{ fontWeight:700, fontSize:16 }}>ConTacto — Braille</div>
+            <div style={{ fontWeight:700, fontSize:16 }}>ConTacto</div>
             <div style={{ color:'#888', fontSize:13 }}>Hola, {nombre}</div>
           </div>
         </div>
@@ -180,16 +180,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Barra XP global */}
-      <div style={{ background:'white', borderRadius:12, padding:'14px 20px', marginBottom:24, boxShadow:'0 2px 8px #0001' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'#888', marginBottom:8 }}>
-          <span>Progreso de Nivel {nivel}</span>
-          <span style={{ color:'#7c3aed', fontWeight:700 }}>{xpEnNivel} / 500 XP</span>
-        </div>
-        <div style={{ height:10, background:'#e5e7eb', borderRadius:99, overflow:'hidden' }}>
-          <div style={{ height:'100%', width:`${(xpEnNivel/500)*100}%`, background:'linear-gradient(90deg,#7c3aed,#2563eb)', borderRadius:99, transition:'width 0.5s ease' }}/>
-        </div>
-      </div>
+    
 
       {/* Logros recientes */}
       {progreso.logros?.length > 0 && (

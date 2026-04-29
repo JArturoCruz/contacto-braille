@@ -301,15 +301,18 @@ export default function Tutorial() {
   const esPrimero = pasoActual === 0
   const esUltimo = pasoActual === PASOS.length - 1
 
+  const textoCompleto = `${paso.titulo}. ${paso.subtitulo}. ${paso.contenidoInvidente}`;
+
   useEffect(() => {
     setVozActiva(invidente)
     if (invidente) {
-      setTimeout(() => hablar(PASOS[0].voz), 500)
+      const primerPaso = PASOS[0];
+      setTimeout(() => hablar(`${primerPaso.titulo}. ${primerPaso.subtitulo}. ${primerPaso.contenidoInvidente}`), 500)
     }
   }, [])
 
   useEffect(() => {
-    if (invidente) hablar(paso.voz)
+    if (invidente) hablar(textoCompleto)
     if (invidente) btnRef.current?.focus()
   }, [pasoActual])
 
@@ -343,8 +346,8 @@ export default function Tutorial() {
 
         {/* Contenido del paso */}
         <div style={si.card} tabIndex={0}
-          onFocus={() => hablar(paso.voz)}
-          onMouseEnter={() => hablar(paso.titulo)}>
+          onFocus={() => hablar(textoCompleto)}
+          onMouseEnter={() => hablar(textoCompleto)}>
           <div style={{ fontSize:48, textAlign:'center', marginBottom:8 }}>{paso.icono}</div>
           <div style={{ color:'white', fontWeight:800, fontSize:18, textAlign:'center', marginBottom:6 }}>{paso.titulo}</div>
           <div style={{ color:'#c4b5fd', fontSize:13, textAlign:'center', marginBottom:16 }}>{paso.subtitulo}</div>
@@ -353,7 +356,7 @@ export default function Tutorial() {
 
         {/* Botón releer */}
         <button style={si.btnReleer}
-          onClick={() => hablar(paso.voz)}
+          onClick={() => hablar(textoCompleto)}
           onFocus={() => hablar('Botón releer este paso')}>
           🔊 Repetir explicación
         </button>

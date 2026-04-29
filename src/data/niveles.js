@@ -1,7 +1,5 @@
 // ──────────────────────────────────────────────────────────────────────────────
 //  ABECEDARIO BRAILLE COMPLETO  (matriz 3×2, 6 puntos)
-//  Índices: [p1, p2, p3, p4, p5, p6]
-//            col1-fila1, col1-fila2, col1-fila3, col2-fila1, col2-fila2, col2-fila3
 // ──────────────────────────────────────────────────────────────────────────────
 export const BRAILLE = {
   A:[1,0,0,0,0,0], B:[1,1,0,0,0,0], C:[1,0,0,1,0,0],
@@ -28,32 +26,28 @@ export const TECLA_A_PUNTO = { d:0, f:1, g:2, h:3, j:4, k:5 }
 
 // ──────────────────────────────────────────────────────────────────────────────
 //  DEFINICIÓN DE NIVELES
-//  tipo: 'escribir'  → usuario escribe la letra mostrada
-//        'leer'      → usuario ve la matriz y elige la letra correcta
-//        'completar' → se muestra la letra y parte de la matriz (pista parcial)
 // ──────────────────────────────────────────────────────────────────────────────
 export const NIVELES = [
-  // ─ NIVEL 1 ─ Muy fácil: solo A, B, C con pista siempre visible
   {
     id: 1,
     titulo: 'Primeros Pasos',
-    descripcion: 'Aprende las primeras 3 letras: A, B y C. La pista siempre está visible.',
+    descripcion: 'Aprende las letras: A, B, C, D y E. La pista siempre está visible.',
     tipo: 'escribir',
-    letras: ['A','B','C'],
-    repeticiones: 2,          // cada letra aparece N veces
-    pistaAutomatica: true,    // la pista (puntos morados) aparece sin pedirla
+    letras: ['A','B','C','D','E'],
+    repeticiones: 1,
+    enOrden: true,
+    pistaAutomatica: true,
     tiempoBonus: false,
     xpPorAcierto: 10,
     estrellasPerfecto: 3,
     estrellasMinimas: 1,
-    precisionPerfecto: 100,
+    precisionPerfecto: 100,   
     precisionBuena: 70,
   },
-  // ─ NIVEL 2 ─ Fácil: A-E sin pista automática
   {
     id: 2,
     titulo: 'Las Vocales',
-    descripcion: 'Escribe A, B, C, D y E en braille. Sin pista automática.',
+    descripcion: 'Escribe A, E, I, O y U en braille. Sin pista automática.',
     tipo: 'escribir',
     letras: ['A','E','I','O','U'],
     repeticiones: 2,
@@ -65,7 +59,6 @@ export const NIVELES = [
     precisionPerfecto: 100,
     precisionBuena: 70,
   },
-  // ─ NIVEL 3 ─ Fácil-medio: A-J, sin pista automática
   {
     id: 3,
     titulo: 'Primera Decena',
@@ -81,7 +74,6 @@ export const NIVELES = [
     precisionPerfecto: 95,
     precisionBuena: 65,
   },
-  // ─ NIVEL 4 ─ Medio: Leer braille (ver matriz → elegir letra)
   {
     id: 4,
     titulo: 'Leer Braille',
@@ -96,9 +88,8 @@ export const NIVELES = [
     estrellasMinimas: 1,
     precisionPerfecto: 90,
     precisionBuena: 60,
-    opcionesPorPregunta: 4,   // cuántas opciones múltiples mostrar
+    opcionesPorPregunta: 4,   
   },
-  // ─ NIVEL 5 ─ Medio: K-T escribir
   {
     id: 5,
     titulo: 'Segunda Decena',
@@ -114,7 +105,6 @@ export const NIVELES = [
     precisionPerfecto: 95,
     precisionBuena: 65,
   },
-  // ─ NIVEL 6 ─ Medio-difícil: U-Z + repaso mixto
   {
     id: 6,
     titulo: 'El Abecedario Completo',
@@ -130,7 +120,6 @@ export const NIVELES = [
     precisionPerfecto: 90,
     precisionBuena: 60,
   },
-  // ─ NIVEL 7 ─ Difícil: Leer todo el alfabeto
   {
     id: 7,
     titulo: 'Lectura Total',
@@ -147,7 +136,6 @@ export const NIVELES = [
     precisionBuena: 55,
     opcionesPorPregunta: 5,
   },
-  // ─ NIVEL 8 ─ Muy difícil: Completar la matriz (pistas parciales)
   {
     id: 8,
     titulo: 'Memoria Táctil',
@@ -162,9 +150,8 @@ export const NIVELES = [
     estrellasMinimas: 1,
     precisionPerfecto: 80,
     precisionBuena: 50,
-    puntosPreMarcados: 2,    // cuántos puntos correctos se muestran de inicio
+    puntosPreMarcados: 2,    
   },
-  // ─ NIVEL 9 ─ Experto: Todo el alfabeto, contrareloj
   {
     id: 9,
     titulo: 'Velocidad Braille',
@@ -174,14 +161,13 @@ export const NIVELES = [
     repeticiones: 1,
     pistaAutomatica: false,
     tiempoBonus: true,
-    tiempoLimite: 120,        // segundos
+    tiempoLimite: 120,        
     xpPorAcierto: 35,
     estrellasPerfecto: 3,
     estrellasMinimas: 1,
     precisionPerfecto: 85,
     precisionBuena: 55,
   },
-  // ─ NIVEL 10 ─ Maestro: Ronda mixta aleatoria
   {
     id: 10,
     titulo: 'Maestro del Braille',
@@ -205,86 +191,45 @@ export const NIVELES = [
 //  LOGROS
 // ──────────────────────────────────────────────────────────────────────────────
 export const LOGROS = [
-  {
-    id: 'primer_nivel',
-    titulo: 'Primer Contacto',
-    desc: 'Completaste el Nivel 1. ¡Bienvenido al mundo del Braille!',
-    emoji: '🌟',
-    color: '#f59e0b',
-    condicion: (stats) => stats.nivelesCompletados.includes(1),
-  },
-  {
-    id: 'perfecto_nivel1',
-    titulo: 'Sin Errores',
-    desc: 'Completaste el Nivel 1 con 100% de precisión.',
-    emoji: '💎',
-    color: '#06b6d4',
-    condicion: (stats) => stats.precisionNivel?.[1] === 100,
-  },
-  {
-    id: 'cinco_niveles',
-    titulo: 'A Mitad de Camino',
-    desc: 'Completaste 5 niveles.',
-    emoji: '🚀',
-    color: '#8b5cf6',
-    condicion: (stats) => stats.nivelesCompletados.length >= 5,
-  },
-  {
-    id: 'maestro',
-    titulo: 'Maestro Braille',
-    desc: 'Completaste todos los 10 niveles.',
-    emoji: '🏆',
-    color: '#d97706',
-    condicion: (stats) => stats.nivelesCompletados.length >= 10,
-  },
-  {
-    id: 'velocista',
-    titulo: 'Velocista',
-    desc: 'Completaste el Nivel 9 (velocidad) con 3 estrellas.',
-    emoji: '⚡',
-    color: '#f97316',
-    condicion: (stats) => stats.estrellasNivel?.[9] === 3,
-  },
+  { id: 'primer_nivel', titulo: 'Primer Contacto', desc: 'Completaste el Nivel 1. ¡Bienvenido al mundo del Braille!', emoji: '🌟', color: '#f59e0b', condicion: (stats) => stats.nivelesCompletados.includes(1) },
+  { id: 'perfecto_nivel1', titulo: 'Sin Errores', desc: 'Completaste el Nivel 1 con 100% de precisión.', emoji: '💎', color: '#06b6d4', condicion: (stats) => stats.precisionNivel?.[1] === 100 },
+  { id: 'cinco_niveles', titulo: 'A Mitad de Camino', desc: 'Completaste 5 niveles.', emoji: '🚀', color: '#8b5cf6', condicion: (stats) => stats.nivelesCompletados.length >= 5 },
+  { id: 'maestro', titulo: 'Maestro Braille', desc: 'Completaste todos los 10 niveles.', emoji: '🏆', color: '#d97706', condicion: (stats) => stats.nivelesCompletados.length >= 10 },
+  { id: 'velocista', titulo: 'Velocista', desc: 'Completaste el Nivel 9 (velocidad) con 3 estrellas.', emoji: '⚡', color: '#f97316', condicion: (stats) => stats.estrellasNivel?.[9] === 3 },
 ]
 
 // ──────────────────────────────────────────────────────────────────────────────
 //  HELPERS
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** Genera la secuencia de preguntas para un nivel */
 export function generarSecuencia(nivel) {
   let preguntas = []
   const letras = [...nivel.letras]
 
   if (nivel.tipo === 'mixto') {
-    // mezcla leer y escribir
-    letras.forEach(l => {
-      preguntas.push({ letra: l, tipo: Math.random() > 0.5 ? 'escribir' : 'leer' })
-    })
+    letras.forEach(l => { preguntas.push({ letra: l, tipo: Math.random() > 0.5 ? 'escribir' : 'leer' }) })
   } else {
     for (let r = 0; r < (nivel.repeticiones || 1); r++) {
       letras.forEach(l => preguntas.push({ letra: l, tipo: nivel.tipo }))
     }
   }
 
-  // Mezclar (Fisher-Yates)
-  for (let i = preguntas.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[preguntas[i], preguntas[j]] = [preguntas[j], preguntas[i]]
+  if (!nivel.enOrden) {
+    for (let i = preguntas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[preguntas[i], preguntas[j]] = [preguntas[j], preguntas[i]]
+    }
   }
   return preguntas
 }
 
-/** Genera opciones múltiples para el tipo 'leer' */
 export function generarOpciones(letraCorrecta, cantidad = 4) {
   const todas = Object.keys(BRAILLE).filter(l => l !== letraCorrecta)
-  // mezclar
   for (let i = todas.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
     ;[todas[i], todas[j]] = [todas[j], todas[i]]
   }
   const opciones = [letraCorrecta, ...todas.slice(0, cantidad - 1)]
-  // mezclar resultado
   for (let i = opciones.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
     ;[opciones[i], opciones[j]] = [opciones[j], opciones[i]]
@@ -292,14 +237,17 @@ export function generarOpciones(letraCorrecta, cantidad = 4) {
   return opciones
 }
 
-/** Calcula estrellas según precisión */
 export function calcularEstrellas(precision, nivel) {
   if (precision >= nivel.precisionPerfecto) return 3
   if (precision >= nivel.precisionBuena) return 2
   return 1
 }
 
-/** Lee progreso del localStorage */
+function estadoInicial() {
+  return { xp: 0, nivel: 1, nivelesCompletados: [], estrellasNivel: {}, precisionNivel: {}, logros: [] }
+}
+
+/** Lee progreso del localStorage (lo que usa el juego) */
 export function leerProgreso() {
   try {
     const raw = localStorage.getItem('braille_progreso')
@@ -308,18 +256,20 @@ export function leerProgreso() {
   } catch { return estadoInicial() }
 }
 
-/** Guarda progreso */
+/** * CORRECCIÓN VITAL:
+ * Guarda el progreso en el LocalStorage y lo manda a la BD del servidor 
+ */
 export function guardarProgreso(prog) {
+  // 1. Guardar para que la pantalla se actualice al instante
   localStorage.setItem('braille_progreso', JSON.stringify(prog))
-}
 
-function estadoInicial() {
-  return {
-    xp: 0,
-    nivel: 1,
-    nivelesCompletados: [],
-    estrellasNivel: {},
-    precisionNivel: {},
-    logros: [],
+  // 2. Avisarle a la BD para no perderlo si el usuario cierra sesión
+  const email = sessionStorage.getItem('email')
+  if (email) {
+    fetch('http://localhost:3001/api/update-progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, nuevoProgreso: prog })
+    }).catch(err => console.error('Error sincronizando con bd.txt:', err))
   }
 }

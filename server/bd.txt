@@ -1,6 +1,2 @@
-Jorge Arturo|arturo123|123456|vidente
-Alejandra Lopez|alejandra123|123456|invidente
-Alejandra Lopez|Alejandra123|123456|invidente
-alejandra|ale|123456|invidente
-a|a|a|invidente
-b|b|b|vidente
+a|a|a|vidente|{"nivelActual":1,"leccionesCompletadas":[],"xp":6885,"nivelesCompletados":[1,2,3,4,5,6,7,8,9,10],"estrellasNivel":{"1":3,"2":3,"3":3,"4":3,"5":3,"6":3,"7":2,"8":2,"9":2,"10":2},"precisionNivel":{"1":100,"2":100,"3":100,"4":100,"5":100,"6":100,"7":79,"8":79,"9":79,"10":79},"logros":["primer_nivel","perfecto_nivel1","cinco_niveles","maestro"]}
+b|b|b|vidente|{"nivelActual":1,"leccionesCompletadas":[]}

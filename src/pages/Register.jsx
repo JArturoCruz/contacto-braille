@@ -12,7 +12,6 @@ export default function Register() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  // Register SIEMPRE con voz activada
   useEffect(() => {
     setVozActiva(true)
     setTimeout(() => hablar('Pantalla de crear cuenta. Campo nombre completo'), 400)
@@ -36,7 +35,16 @@ export default function Register() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); hablar(data.error); return }
+      
+      sessionStorage.clear()
+      localStorage.clear()
+      
       sessionStorage.setItem('nombre', data.nombre)
+      sessionStorage.setItem('email', email)
+      
+      // CORRECCIÓN: Guardar inicialización en 'braille_progreso'
+      localStorage.setItem('braille_progreso', JSON.stringify(data.progreso))
+      
       setModo(modo)
       setVozActiva(modo === 'invidente')
       hablar('Cuenta creada exitosamente. Bienvenido ' + data.nombre)
@@ -50,7 +58,6 @@ export default function Register() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-
         <div style={s.logo} tabIndex={0}
           onFocus={() => hablar('ConTacto, aplicación para aprender braille')}
           onMouseEnter={() => hablar('ConTacto, aplicación para aprender braille')}>
@@ -73,33 +80,28 @@ export default function Register() {
         <input style={s.input} placeholder="Tu nombre completo" autoFocus
           value={nombre} onChange={e => setNombre(e.target.value)}
           onFocus={() => hablar('Campo nombre completo')}
-          onMouseEnter={() => hablar('Campo nombre completo')}
-          aria-label="Nombre completo" />
+          onMouseEnter={() => hablar('Campo nombre completo')} aria-label="Nombre completo" />
 
         <label style={s.label}>Correo Electrónico</label>
         <input style={s.input} type="email" placeholder="tu@email.com"
           value={email} onChange={e => setEmail(e.target.value)}
           onFocus={() => hablar('Campo correo electrónico')}
-          onMouseEnter={() => hablar('Campo correo electrónico')}
-          aria-label="Correo electrónico" />
+          onMouseEnter={() => hablar('Campo correo electrónico')} aria-label="Correo electrónico" />
 
         <label style={s.label}>Contraseña</label>
         <input style={s.input} type="password" placeholder="••••••"
           value={password} onChange={e => setPassword(e.target.value)}
           onFocus={() => hablar('Campo contraseña')}
-          onMouseEnter={() => hablar('Campo contraseña')}
-          aria-label="Contraseña" />
+          onMouseEnter={() => hablar('Campo contraseña')} aria-label="Contraseña" />
 
         <label style={s.label}>Confirmar Contraseña</label>
         <input style={s.input} type="password" placeholder="••••••"
           value={confirmar} onChange={e => setConfirmar(e.target.value)}
           onFocus={() => hablar('Campo confirmar contraseña')}
-          onMouseEnter={() => hablar('Campo confirmar contraseña')}
-          aria-label="Confirmar contraseña" />
+          onMouseEnter={() => hablar('Campo confirmar contraseña')} aria-label="Confirmar contraseña" />
 
         <label style={s.label}>Modo de Aprendizaje</label>
-        <p style={s.modoDesc} tabIndex={0}
-          onFocus={() => hablar('Selecciona tu modo de aprendizaje')}>
+        <p style={s.modoDesc} tabIndex={0} onFocus={() => hablar('Selecciona tu modo de aprendizaje')}>
           Selecciona cómo quieres usar la aplicación
         </p>
 
@@ -107,30 +109,17 @@ export default function Register() {
           { id:'vidente', titulo:'Modo Vidente', desc:'Interfaz visual. Sin voz guiada.' },
           { id:'invidente', titulo:'Modo Invidente', desc:'Voz guiada y navegación por teclado.' },
         ].map(m => (
-          <button key={m.id}
-            style={{
-              ...s.modoBtn,
-              background: modo === m.id ? '#7c3aed' : 'transparent',
-              color: modo === m.id ? 'white' : '#c4b5fd',
-              borderColor: modo === m.id ? '#7c3aed' : '#4c1d95',
-            }}
-            onClick={() => {
-              setModoLocal(m.id)
-              hablar(m.titulo + ' seleccionado. ' + m.desc)
-            }}
+          <button key={m.id} style={{ ...s.modoBtn, background: modo === m.id ? '#7c3aed' : 'transparent', color: modo === m.id ? 'white' : '#c4b5fd', borderColor: modo === m.id ? '#7c3aed' : '#4c1d95' }}
+            onClick={() => { setModoLocal(m.id); hablar(m.titulo + ' seleccionado. ' + m.desc) }}
             onFocus={() => hablar(m.titulo + (modo === m.id ? ', seleccionado. ' : '. ') + m.desc)}
-            onMouseEnter={() => hablar(m.titulo + '. ' + m.desc)}
-            aria-pressed={modo === m.id}>
+            onMouseEnter={() => hablar(m.titulo + '. ' + m.desc)} aria-pressed={modo === m.id}>
             <span style={{fontWeight:800}}>{modo === m.id ? '● ' : '○ '}{m.titulo}</span>
             <span style={{fontSize:12, opacity:0.8, marginTop:2, display:'block'}}>{m.desc}</span>
           </button>
         ))}
 
         {error && (
-          <p style={s.error} role="alert"
-            onFocus={() => hablar('Error: ' + error)}>
-            {error}
-          </p>
+          <p style={s.error} role="alert" onFocus={() => hablar('Error: ' + error)}>{error}</p>
         )}
 
         <button style={s.btnPrimario} onClick={handleRegister}
@@ -144,7 +133,6 @@ export default function Register() {
           onMouseEnter={() => hablar('Volver a inicio de sesión')}>
           ¿Ya tienes cuenta? Inicia sesión
         </button>
-
       </div>
     </div>
   )

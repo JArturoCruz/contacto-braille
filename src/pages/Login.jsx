@@ -10,7 +10,6 @@ export default function Login() {
   const navigate = useNavigate()
   const emailRef = useRef(null)
 
-  // Login y Register SIEMPRE con voz activada
   useEffect(() => {
     setVozActiva(true)
     emailRef.current?.focus()
@@ -37,10 +36,19 @@ export default function Login() {
         hablar(data.error)
         return
       }
+      
+      // Limpiamos rastros anteriores por seguridad
+      sessionStorage.clear()
+      localStorage.clear() 
+
+      // Asignamos credenciales para que el sistema las reconozca
       sessionStorage.setItem('nombre', data.nombre)
-      // Aplicar el modo guardado del usuario
+      sessionStorage.setItem('email', email)
+      
+      // CORRECCIÓN: Usar exactamente la variable 'braille_progreso' que lee el Dashboard
+      localStorage.setItem('braille_progreso', JSON.stringify(data.progreso))
+
       setModo(data.modo)
-      // Activar o desactivar voz según su modo
       setVozActiva(data.modo === 'invidente')
       if (data.modo === 'invidente') {
         hablar('Bienvenido ' + data.nombre + '. Modo invidente activado.')
@@ -60,7 +68,6 @@ export default function Login() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-
         <div style={s.logo} tabIndex={0}
           onFocus={() => hablar('ConTacto, aplicación para aprender braille')}
           onMouseEnter={() => hablar('ConTacto, aplicación para aprender braille')}>
@@ -80,37 +87,17 @@ export default function Login() {
         </p>
 
         <label style={s.label}>Correo Electrónico</label>
-        <input
-          ref={emailRef}
-          style={s.input}
-          type="email"
-          placeholder="tu@email.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          onFocus={() => hablar('Campo correo electrónico')}
-          onMouseEnter={() => hablar('Campo correo electrónico')}
-          onKeyDown={handleKeyDown}
-          aria-label="Correo electrónico"
-        />
+        <input ref={emailRef} style={s.input} type="email" placeholder="tu@email.com" value={email}
+          onChange={e => setEmail(e.target.value)} onFocus={() => hablar('Campo correo electrónico')}
+          onMouseEnter={() => hablar('Campo correo electrónico')} onKeyDown={handleKeyDown} aria-label="Correo electrónico" />
 
         <label style={s.label}>Contraseña</label>
-        <input
-          style={s.input}
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          onFocus={() => hablar('Campo contraseña')}
-          onMouseEnter={() => hablar('Campo contraseña')}
-          onKeyDown={handleKeyDown}
-          aria-label="Contraseña"
-        />
+        <input style={s.input} type="password" placeholder="••••••••" value={password}
+          onChange={e => setPassword(e.target.value)} onFocus={() => hablar('Campo contraseña')}
+          onMouseEnter={() => hablar('Campo contraseña')} onKeyDown={handleKeyDown} aria-label="Contraseña" />
 
         {error && (
-          <p style={s.error} role="alert"
-            onFocus={() => hablar('Error: ' + error)}>
-            {error}
-          </p>
+          <p style={s.error} role="alert" onFocus={() => hablar('Error: ' + error)}>{error}</p>
         )}
 
         <button style={s.btnPrimario} onClick={handleLogin}
@@ -119,17 +106,11 @@ export default function Login() {
           Iniciar Sesión
         </button>
 
-        <button style={s.btnSecundario}
-          onClick={() => navigate('/register')}
+        <button style={s.btnSecundario} onClick={() => navigate('/register')}
           onFocus={() => hablar('Botón crear cuenta nueva')}
           onMouseEnter={() => hablar('Ir a crear una cuenta nueva')}>
           ¿No tienes cuenta? Regístrate
         </button>
-
-        <div style={s.demo} tabIndex={0}
-          onFocus={() => hablar('Modo demo: usa cualquier correo y contraseña para entrar')}>
-          <strong>Demo:</strong> Usa cualquier email y contraseña, o regístrate.
-        </div>
 
       </div>
     </div>
